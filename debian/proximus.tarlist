@@ -1,0 +1,25 @@
+# This file is created by MADDE 'dh_fixperms'.
+# MADDE 'dpkg-deb' uses this file when creating
+# 'data.tar.gz' for debian package ar archive.
+755 root root . ./opt /
+755 root root . ./opt/Proximus /
+755 root root . ./opt/Proximus/bin /
+755 root root . ./opt/Proximus/bin/Proximus debian/proximus/opt/Proximus/bin/Proximus
+755 root root . ./opt/Proximus/qml /
+755 root root . ./opt/Proximus/qml/Proximus /
+644 root root . ./opt/Proximus/qml/Proximus/main.qml debian/proximus/opt/Proximus/qml/Proximus/main.qml
+644 root root . ./opt/Proximus/qml/Proximus/SettingsPage.qml debian/proximus/opt/Proximus/qml/Proximus/SettingsPage.qml
+644 root root . ./opt/Proximus/qml/Proximus/StatusPage.qml debian/proximus/opt/Proximus/qml/Proximus/StatusPage.qml
+755 root root . ./usr /
+755 root root . ./usr/share /
+755 root root . ./usr/share/applications /
+644 root root . ./usr/share/applications/Proximus_harmattan.desktop debian/proximus/usr/share/applications/Proximus_harmattan.desktop
+755 root root . ./usr/share/doc /
+755 root root . ./usr/share/doc/proximus /
+644 root root . ./usr/share/doc/proximus/changelog.gz debian/proximus/usr/share/doc/proximus/changelog.gz
+644 root root . ./usr/share/doc/proximus/copyright debian/proximus/usr/share/doc/proximus/copyright
+755 root root . ./usr/share/icons /
+755 root root . ./usr/share/icons/hicolor /
+755 root root . ./usr/share/icons/hicolor/80x80 /
+755 root root . ./usr/share/icons/hicolor/80x80/apps /
+644 root root . ./usr/share/icons/hicolor/80x80/apps/Proximus80.png debian/proximus/usr/share/icons/hicolor/80x80/apps/Proximus80.png

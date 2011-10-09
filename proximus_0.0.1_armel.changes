@@ -1,0 +1,23 @@
+Format: 1.8
+Date: Mon, 26 Sep 2011 23:07:26 -0600
+Source: proximus
+Binary: proximus
+Architecture: armel
+Version: 0.0.1
+Distribution: unstable
+Urgency: low
+Maintainer: unknown <>
+Changed-By: unknown <>
+Description: 
+ proximus   - <insert up to 60 chars description>
+Changes: 
+ proximus (0.0.1) unstable; urgency=low
+ .
+   * Initial Release.
+Checksums-Sha1: 
+ 57e408f67226cb144aea3ed034566005d23ff659 227200 proximus_0.0.1_armel.deb
+Checksums-Sha256: 
+ 49c8ca7d8721ea36a847728d88213c3f568d8d947b3c316176078c0d5b7608de 227200 proximus_0.0.1_armel.deb
+Files: 
+ 442c2b74f981c51882a2c50df58016d6 227200 user/other optional proximus_0.0.1_armel.deb
+Maemo-Display-Name: Proximus
