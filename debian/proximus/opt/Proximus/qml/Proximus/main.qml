@@ -3,45 +3,43 @@ import com.nokia.meego 1.0
 
 PageStackWindow {
     id: appWindow
-
-    StatusBar{
-        id: statusbar
+    //initialPage: Qt.resolvedUrl("StatusPage.qml");
+//    initialPage: SettingsPage { }
+//    initialPage: StatusPage { }
+    initialPage: mainPage
+    MainPage {
+        id: mainPage
     }
 
     Component.onCompleted: {
-        tabGroup.currentTab = tabStatus;
-    }
-
-    ToolBar {
-        id: commonTools
-        anchors.bottom: parent.bottom
-        tools: toolbarLayout1
+        //tabGroup.currentTab = tabStatus;
     }
 
     ToolBarLayout {
-        id: toolbarLayout1
+        id: commonTools
         ToolIcon{  iconId: "toolbar-back";
             onClicked: { myMenu.close(); pageStack.pop(); } }
         ButtonRow {
+            style: TabButtonStyle { }
             TabButton {
-                id: tabBtnStatus
                 tab: tabStatus
                 text: "Status"
             }
             TabButton {
-                id: tabBtnSettings
                 tab: tabSettings
                 text: "Settings"
             }
         }
+        ToolIcon {
+            platformIconId: "toolbar-view-menu"
+            anchors.right: (parent === undefined) ? undefined : parent.right
+            onClicked: (myMenu.status == DialogStatus.Closed) ? myMenu.open() : myMenu.close()
+        }
+
     }
     TabGroup {
         id: tabGroup
-        anchors {
-        bottom: commonTools.top
-        left: parent.left
-        right: parent.right
-        }
+        currentTab: tabStatus
         // define the content for tab 1
         StatusPage {
             id: tabStatus

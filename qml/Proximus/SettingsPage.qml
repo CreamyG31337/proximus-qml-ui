@@ -2,15 +2,17 @@ import QtQuick 1.1
 import com.nokia.meego 1.0
 
 Page {
-   // id: settingsPage
+    id: tabStatus
     tools: commonTools
-    anchors { fill: parent; topMargin: 20;}
+    anchors { fill: parent;
+      //  topMargin: 70;
+    }
     Label {
         id: label
         //anchors.centerIn: parent
         anchors{top: parent.top}
         text: qsTr("settings page")
-        visible: false
+        visible: true
     }
     Row{
         id: rowRow
@@ -28,8 +30,6 @@ Page {
             color: platformStyle.colorNormalLight
         }
     }
-
-
 
     Button{
         id: btnNew
