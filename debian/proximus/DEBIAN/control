@@ -2,7 +2,7 @@ Package: proximus
 Version: 0.0.1
 Architecture: armel
 Maintainer: unknown <>
-Installed-Size: 718
+Installed-Size: 747
 Section: user/other
 Priority: optional
 Homepage: <insert the upstream URL, if relevant>

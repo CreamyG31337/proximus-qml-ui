@@ -14,7 +14,8 @@ MySettings::~MySettings()
 
 RuleObject::RuleObject(QString name, bool enabled)
 {
-
+        strname = name;
+        boolenabled = enabled;
 }
 
 bool RuleObject::enabled()
@@ -50,8 +51,35 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
 
     QScopedPointer<QApplication> app(MDeclarativeCache::qApplication(argc, argv));
     QScopedPointer<QDeclarativeView> view(MDeclarativeCache::qDeclarativeView());
+
     MySettings objSettings;
+    QList<QObject*> rulesList;
+
+    objSettings.beginGroup("settings");
+    if (!objSettings.contains("GPS")) //first run, need to create default settings
+    {
+        objSettings.setValue("GPS",false);
+    }
+    objSettings.endGroup();//end settings
+    objSettings.beginGroup("rules");
+    if (objSettings.childGroups().count() == 0) //first run, or no rules -- create one example rule
+    {
+        objSettings.setValue("Example Rule/enabled",(bool)false);
+        objSettings.setValue("Example Rule/Location/enabled",(bool)true);
+        objSettings.setValue("Example Rule/Location/NOT",(bool)false);
+        objSettings.setValue("Example Rule/Location/RADIUS",(double)250);
+        objSettings.setValue("Example Rule/Location/LONGITUDE",(double)-113.485336);
+        objSettings.setValue("Example Rule/Location/LATITUDE",(double)53.533064);
+    }
+
+    Q_FOREACH(const QString &strRuleName, objSettings.childGroups()){//for each rule
+        objSettings.beginGroup(strRuleName);
+        rulesList.append(new RuleObject(strRuleName,objSettings.getValue("enabled",false).toBool()));
+        objSettings.endGroup();
+    }
+    objSettings.endGroup();//end rules
     view->rootContext()->setContextProperty("objQSettings",&objSettings);
+    view->rootContext()->setContextProperty("objRulesModel", QVariant::fromValue(rulesList));
 
     view->setSource(MDeclarativeCache::applicationDirPath()
                     + QLatin1String("/../qml/Proximus/main.qml"));

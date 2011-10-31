@@ -101,7 +101,7 @@ Page {
     ListView{
         id: rulesList
         model: objRulesModel
-        delegate:  Text{ text: "Rule " + index}
+        delegate:  Text{ text: "Rule " + index + " " + model.modelData.name}
         anchors {
             top: lblRules.bottom
             left: parent.left
