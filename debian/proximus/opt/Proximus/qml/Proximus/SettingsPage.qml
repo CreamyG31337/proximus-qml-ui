@@ -5,24 +5,28 @@ Page {
     id: tabStatus
     tools: commonTools
     anchors { fill: parent;
-      //  topMargin: 70;
+        top: statusBar.bottom
     }
     Label {
-        id: label
+        id: lblSettings
         //anchors.centerIn: parent
-        anchors{top: parent.top}
-        text: qsTr("settings page")
+        anchors{top: parent.top
+            horizontalCenter: parent.horizontalCenter
+        }
+        text: qsTr("Global Settings")
         visible: true
     }
     Row{
-        id: rowRow
+        id: rowSettings1
         spacing: 10
-        anchors.top: label.bottom
+        anchors.top: lblSettings.bottom
         Switch{
             id: swGPS
+            checked: objQSettings.getValue("settings/GPS",true)
+            onCheckedChanged: {objQSettings.setValue("settings/GPS",swGPS.checked) }
         }
         Text{
-            width: rowRow.width - rowRow.spacing - swGPS.width
+            width: rowSettings1.width - rowSettings1.spacing - swGPS.width
             height: swGPS.height
             verticalAlignment: Text.AlignVCenter
             text: "Use GPS"
@@ -30,35 +34,78 @@ Page {
             color: platformStyle.colorNormalLight
         }
     }
-
+    Label {
+        id: lblRules
+        //anchors.centerIn: parent
+        anchors{
+            top: rowSettings1.bottom
+            topMargin: 10
+        }
+        text: qsTr("Rules:")
+    }
     Button{
         id: btnNew
         anchors {
-            horizontalCenter: parent.horizontalCenter
-            top: rowRow.bottom
-            topMargin: 10
+            right: parent.right
+            top: lblRules.bottom
         }
+        width: 150
         text: qsTr("New")
         onClicked: label.visible = true
     }
     Button{
         id: btnEdit
         anchors {
-            horizontalCenter: parent.horizontalCenter
+            right: parent.right
             top: btnNew.bottom
             topMargin: 10
         }
+        width: 150
         text: qsTr("Edit")
+        onClicked: label.visible = true
+    }
+    Button{
+
+        id: btnEnable
+        anchors {
+            right: parent.right
+            top: btnEdit.bottom
+            topMargin: 10
+        }
+        width: 150
+        text: qsTr("Enable")
+        onClicked: label.visible = true
+    }
+    Button{
+        id: btnDisable
+        anchors {
+            right: parent.right
+            top: btnEnable.bottom
+            topMargin: 10
+        }
+        width: 150
+        text: qsTr("Disable")
         onClicked: label.visible = true
     }
     Button{
         id: btnDelete
         anchors {
-            horizontalCenter: parent.horizontalCenter
-            top: btnEdit.bottom
+            right: parent.right
+            top: btnDisable.bottom
             topMargin: 10
         }
+        width: 150
         text: qsTr("Delete")
         onClicked: label.visible = true
+    }
+    ListView{
+        id: rulesList
+        model: objRulesModel
+        delegate:  Text{ text: "Rule " + index}
+        anchors {
+            top: lblRules.bottom
+            left: parent.left
+            right: btnDelete.left
+        }
     }
 }

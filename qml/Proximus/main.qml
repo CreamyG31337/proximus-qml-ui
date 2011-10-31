@@ -3,12 +3,13 @@ import com.nokia.meego 1.0
 
 PageStackWindow {
     id: appWindow
-    //initialPage: Qt.resolvedUrl("StatusPage.qml");
-//    initialPage: SettingsPage { }
-//    initialPage: StatusPage { }
     initialPage: mainPage
     MainPage {
         id: mainPage
+         anchors.top: statusBar.bottom
+    }
+    StatusBar{
+        id: statusBar
     }
 
     Component.onCompleted: {
@@ -17,6 +18,11 @@ PageStackWindow {
 
     ToolBarLayout {
         id: commonTools
+        anchors {
+            left: parent.left;
+            right: parent.right;
+            bottom: parent.bottom
+        }
         ToolIcon{  iconId: "toolbar-back";
             onClicked: { myMenu.close(); pageStack.pop(); } }
         ButtonRow {
@@ -35,20 +41,25 @@ PageStackWindow {
             anchors.right: (parent === undefined) ? undefined : parent.right
             onClicked: (myMenu.status == DialogStatus.Closed) ? myMenu.open() : myMenu.close()
         }
-
     }
     TabGroup {
         id: tabGroup
         currentTab: tabStatus
+        anchors {
+        left: parent.left;
+        right: parent.right;
+        top: statusBar.bottom;
+        bottom: parent.bottom
+        }
         // define the content for tab 1
         StatusPage {
             id: tabStatus
-            anchors { fill: parent;}
+            anchors { fill: tabGroup;}
         }
         // define the content for tab 2
         SettingsPage {
             id: tabSettings
-            anchors { fill: parent;}
+            anchors { fill: tabGroup;}
         }
     }
     Menu {

@@ -33,6 +33,8 @@ maemo5 {
     #harmattan (or symbian). Why can't we just get an environment macro for harmattan? >:(
     CONFIG += mobility
     CONFIG += qdeclarative-boostable
+    INCLUDEPATH += /usr/include/applauncherd
+    INCLUDEPATH += /usr/include/qt4
 #    #the macro Q_WS_SIMULATOR is not working properly in the following two files!!
 #    SOURCES += profileclient.cpp
 #    HEADERS += profileclient.h
@@ -86,7 +88,9 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/changelog
 
 HEADERS += \
-    profileclient.h
+    profileclient.h \
+    main.h
+
 
 
 

@@ -4,30 +4,30 @@ import com.nokia.meego 1.0
 Page {
     id: tabSettings
     tools: commonTools
-
-    Label {
-        id: label
-        anchors.centerIn: parent
-        text: qsTr("status page")
-        visible: false
+    anchors { fill: parent;
+        top: statusBar.bottom
     }
 
-    Button{
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            top: label.bottom
-            topMargin: 10
-        }
-        text: qsTr("status page")
-        onClicked: label.visible = true
-    }
-//    TabBarLayout {
-//        id: tabBarLayout
-//        anchors { left: parent.left; right: parent.right; top: parent.top }
-//        TabButton { tab: tab1content; text: "Tab 1" }
-//        TabButton { tab: tab2content; text: "Tab 2" }
-//        TabButton { tab: tab3content; text: "Tab 3" }
+//    Label {
+//        id: label
+//        anchors.centerIn: parent
+//        text: qsTr("status page")
+//        visible: true
 //    }
-    // define a blank tab group so we can add the pages of content later
+    TextArea {
+        id: txtLog
+        text: qsTr("Welcome to Proximus\n Log goes here")
+        anchors {top: parent.top; left: parent.left; right: parent.right;}
+        readOnly: true;
+    }
 
+//    Button{
+//        anchors {
+//            horizontalCenter: parent.horizontalCenter
+//            top: txtLog.bottom
+//            topMargin: 10
+//        }
+//        text: qsTr("status page")
+//        onClicked: label.visible = true
+//    }
 }
