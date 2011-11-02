@@ -4,9 +4,7 @@ import com.nokia.meego 1.0
 Page {
     id: tabStatus
     tools: commonTools
-    anchors { fill: parent;
-        top: statusBar.bottom
-    }
+//anchors done from main.qml
     Label {
         id: lblSettings
         //anchors.centerIn: parent
@@ -30,8 +28,8 @@ Page {
             height: swGPS.height
             verticalAlignment: Text.AlignVCenter
             text: "Use GPS"
-            font.pixelSize: platformStyle.fontSizeMedium
-            color: platformStyle.colorNormalLight
+            font.pixelSize: 25
+            color: "black"
         }
     }
     Label {
@@ -99,13 +97,22 @@ Page {
         onClicked: label.visible = true
     }
     ListView{
+        //height: 100 // why needed??
         id: rulesList
         model: objRulesModel
-        delegate:  Text{ text: "Rule " + index + " " + model.modelData.name}
+        delegate:  Text{
+            height: 40;
+            font.pixelSize: 25;
+            text: "Rule " + index + " " + model.modelData.name;
+            color:(model.modelData.enabled = true)?'green':'red';
+        }
         anchors {
             top: lblRules.bottom
             left: parent.left
             right: btnDelete.left
+            bottom: parent.bottom
         }
+        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+        focus: true
     }
 }

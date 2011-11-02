@@ -62,15 +62,22 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     }
     objSettings.endGroup();//end settings
     objSettings.beginGroup("rules");
-    if (objSettings.childGroups().count() == 0) //first run, or no rules -- create one example rule
-    {
-        objSettings.setValue("Example Rule/enabled",(bool)false);
-        objSettings.setValue("Example Rule/Location/enabled",(bool)true);
-        objSettings.setValue("Example Rule/Location/NOT",(bool)false);
-        objSettings.setValue("Example Rule/Location/RADIUS",(double)250);
-        objSettings.setValue("Example Rule/Location/LONGITUDE",(double)-113.485336);
-        objSettings.setValue("Example Rule/Location/LATITUDE",(double)53.533064);
-    }
+    //if (objSettings.childGroups().count() == 0) //first run, or no rules -- create one example rule
+//    {
+        objSettings.setValue("Example Rule1/enabled",(bool)true);
+        objSettings.setValue("Example Rule1/Location/enabled",(bool)true);
+        objSettings.setValue("Example Rule1/Location/NOT",(bool)false);
+        objSettings.setValue("Example Rule1/Location/RADIUS",(double)250);
+        objSettings.setValue("Example Rule1/Location/LONGITUDE",(double)-113.485336);
+        objSettings.setValue("Example Rule1/Location/LATITUDE",(double)53.533064);
+
+        objSettings.setValue("Example Rule2/enabled",(bool)true);
+        objSettings.setValue("Example Rule2/Location/enabled",(bool)true);
+        objSettings.setValue("Example Rule2/Location/NOT",(bool)false);
+        objSettings.setValue("Example Rule2/Location/RADIUS",(double)250);
+        objSettings.setValue("Example Rule2/Location/LONGITUDE",(double)-113.485336);
+        objSettings.setValue("Example Rule2/Location/LATITUDE",(double)53.533064);
+//    }
 
     Q_FOREACH(const QString &strRuleName, objSettings.childGroups()){//for each rule
         objSettings.beginGroup(strRuleName);

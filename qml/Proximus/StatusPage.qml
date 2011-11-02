@@ -4,9 +4,7 @@ import com.nokia.meego 1.0
 Page {
     id: tabSettings
     tools: commonTools
-    anchors { fill: parent;
-        top: statusBar.bottom
-    }
+//anchors done from main.qml
 
 //    Label {
 //        id: label
