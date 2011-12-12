@@ -6,6 +6,10 @@ Page{
     id: rulePage
     property string mode
 
+    MapPage {
+        id: mapPage
+    }
+
     Label {
         id: lblRuleName
         anchors.top : parent.top
@@ -22,7 +26,9 @@ Page{
             id: swUseLocation
             checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Location/enabled",true)
             onCheckedChanged: {
-                txtLocRadius.enabled = swUseLocation.checked
+                txtLocRadius.enabled = swUseLocation.checked;
+                txtLocLatitude.enabled = swUseLocation.checked;
+                txtLocLongitude.enabled = swUseLocation.checked;
             }
         }
         Text{
@@ -61,11 +67,11 @@ Page{
         }
         TextInput{
             id: txtLocLatitude
-            text: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Location/LONGITUDE",0)
-            width: 100
+            text: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Location/LATITUDE",0)
+            width: 150
             font.pixelSize: 25
-            validator: IntValidator{bottom: 1; top: 2000;}
-            maximumLength: 4
+            validator: DoubleValidator{}
+            maximumLength: 12
         }
     }
 
@@ -79,14 +85,28 @@ Page{
         }
         TextInput{
             id: txtLocLongitude
-            text: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Location/LATITUDE",0)
-            width: 100
+            text: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Location/LONGITUDE",0)
+            width: 150
             font.pixelSize: 25
-            validator: IntValidator{bottom: 1; top: 2000;}
-            maximumLength: 4
+            validator: DoubleValidator{}
+            maximumLength: 12
         }
     }
-
+    Button{
+        id: btnFillFromMap
+        anchors {
+            right: parent.right
+            top: rowRuleLocationLatitude.top
+        }
+        width: 180
+        text: qsTr("Fill From Map")
+        //onClicked: appWindow.pageStack.push(mapPage) // doing this way everywhere is dumb because everything is created too early, gps activates when u launch the app.
+        onClicked: {
+            appWindow.pageStack.push(Qt.resolvedUrl("MapPage.qml"),
+                                     {longitudeReq: txtLocLongitude.text, latitudeReq: txtLocLatitude.text} );
+                                   //{longitudeReq: -113.485336, latitudeReq: 53.533064} );
+        }
+    }
 
     Button{
         id: btnCancel

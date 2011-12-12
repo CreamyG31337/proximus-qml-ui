@@ -1,7 +1,8 @@
-602daff8f01fe5a038ff46dad3772efd  opt/Proximus/bin/Proximus
+f28a6a758dfc4f687e4fea1a39191c45  opt/Proximus/bin/Proximus
 cd7cc4fe810256923c768f7059f287e9  opt/Proximus/qml/Proximus/main.qml
 5f11e6dab5d387cd9c09b2b1975fd052  opt/Proximus/qml/Proximus/MainPage.qml
-6b24c210a89eac9b515d7cdd5c979f3f  opt/Proximus/qml/Proximus/RulePage.qml
+cb68c5c3a2fb02c3c03297296fbb543a  opt/Proximus/qml/Proximus/MapPage.qml
+3be9a67bea85438e8bc2c54826f40598  opt/Proximus/qml/Proximus/RulePage.qml
 50535b6f2a03cd3c8d20afdbd3ce5a09  opt/Proximus/qml/Proximus/SettingsPage.qml
 d8611034b0c16aaf14954b25b6f41dcc  opt/Proximus/qml/Proximus/StatusPage.qml
 343b1fbce6baac1a823b3249754fa7b5  usr/share/applications/Proximus_harmattan.desktop
