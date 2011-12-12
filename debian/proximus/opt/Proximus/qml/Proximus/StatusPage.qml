@@ -2,16 +2,9 @@ import QtQuick 1.1
 import com.nokia.meego 1.0
 
 Page {
-    id: tabSettings
-    tools: commonTools
-//anchors done from main.qml
+    id: tabStatus
+    tools:     commonTools
 
-//    Label {
-//        id: label
-//        anchors.centerIn: parent
-//        text: qsTr("status page")
-//        visible: true
-//    }
     TextArea {
         id: txtLog
         text: qsTr("Welcome to Proximus\n Log goes here")
@@ -19,6 +12,16 @@ Page {
         readOnly: true;
     }
 
+
+//    Rectangle{
+//        color: "red"
+//        anchors {
+//            top: txtLog.bottom
+//            left: parent.left
+//            right: parent.right
+//        }
+//        height: tabStatus.height - 155
+//    }
 //    Button{
 //        anchors {
 //            horizontalCenter: parent.horizontalCenter

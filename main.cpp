@@ -77,8 +77,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
         objSettings.setValue("Example Rule2/Location/RADIUS",(double)250);
         objSettings.setValue("Example Rule2/Location/LONGITUDE",(double)-113.485336);
         objSettings.setValue("Example Rule2/Location/LATITUDE",(double)53.533064);
-//    }
-
+//    }        
     Q_FOREACH(const QString &strRuleName, objSettings.childGroups()){//for each rule
         objSettings.beginGroup(strRuleName);
         rulesList.append(new RuleObject(strRuleName,objSettings.getValue("enabled",false).toBool()));

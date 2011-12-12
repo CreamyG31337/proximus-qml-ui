@@ -7,10 +7,11 @@
 755 root root . ./opt/Proximus/bin/Proximus debian/proximus/opt/Proximus/bin/Proximus
 755 root root . ./opt/Proximus/qml /
 755 root root . ./opt/Proximus/qml/Proximus /
-644 root root . ./opt/Proximus/qml/Proximus/main.qml debian/proximus/opt/Proximus/qml/Proximus/main.qml
 644 root root . ./opt/Proximus/qml/Proximus/MainPage.qml debian/proximus/opt/Proximus/qml/Proximus/MainPage.qml
+644 root root . ./opt/Proximus/qml/Proximus/RulePage.qml debian/proximus/opt/Proximus/qml/Proximus/RulePage.qml
 644 root root . ./opt/Proximus/qml/Proximus/SettingsPage.qml debian/proximus/opt/Proximus/qml/Proximus/SettingsPage.qml
 644 root root . ./opt/Proximus/qml/Proximus/StatusPage.qml debian/proximus/opt/Proximus/qml/Proximus/StatusPage.qml
+644 root root . ./opt/Proximus/qml/Proximus/main.qml debian/proximus/opt/Proximus/qml/Proximus/main.qml
 755 root root . ./usr /
 755 root root . ./usr/share /
 755 root root . ./usr/share/applications /

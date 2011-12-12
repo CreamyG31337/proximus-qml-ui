@@ -2,9 +2,15 @@ import QtQuick 1.1
 import com.nokia.meego 1.0
 
 Page {
-    id: tabStatus
+    id: tabSettings
     tools: commonTools
-//anchors done from main.qml
+
+    property string selectedRuleName
+
+    RulePage {
+        id: rulePage
+    }
+
     Label {
         id: lblSettings
         //anchors.centerIn: parent
@@ -49,7 +55,12 @@ Page {
         }
         width: 150
         text: qsTr("New")
-        onClicked: label.visible = true
+        onClicked: {
+            tabSettings.selectedRuleName = ""
+            rulesList.currentIndex = -1;
+            appWindow.pageStack.push(rulePage);
+            rulePage.mode = "new"
+        }
     }
     Button{
         id: btnEdit
@@ -60,7 +71,10 @@ Page {
         }
         width: 150
         text: qsTr("Edit")
-        onClicked: label.visible = true
+        onClicked: {
+            appWindow.pageStack.push(rulePage);
+            rulePage.mode = "edit"
+        }
     }
     Button{
 
@@ -96,23 +110,43 @@ Page {
         text: qsTr("Delete")
         onClicked: label.visible = true
     }
+
+//    Rectangle{
+//        color: "red"
+//        anchors {
+//            top: lblRules.bottom
+//            left: parent.left
+//            right: btnDelete.left
+//        }
+//        height: tabSettings.height - 175
+//    }
     ListView{
-        //height: 100 // why needed??
         id: rulesList
         model: objRulesModel
+        height: tabStatus.height - 175
         delegate:  Text{
             height: 40;
             font.pixelSize: 25;
             text: "Rule " + index + " " + model.modelData.name;
             color:(model.modelData.enabled = true)?'green':'red';
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    rulesList.currentIndex = index
+                    tabSettings.selectedRuleName =  model.modelData.name;
+                }
+            }
         }
         anchors {
             top: lblRules.bottom
             left: parent.left
             right: btnDelete.left
-            bottom: parent.bottom
+           // bottom: parent.bottom
         }
         highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
         focus: true
+        Component.onCompleted: {//not sure how to get already selected name, just remove highlight then...
+            rulesList.currentIndex = -1;
+        }
     }
 }

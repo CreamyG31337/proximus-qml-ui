@@ -40,7 +40,9 @@ public:
     Q_INVOKABLE QStringList childGroups(){
         return qsettInternal.childGroups();
     }
-
+    Q_INVOKABLE QString group(){
+        return qsettInternal.group();
+    }
 private:
     QSettings qsettInternal;
 };
