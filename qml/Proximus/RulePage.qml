@@ -6,6 +6,12 @@ Page{
     id: rulePage
     property string mode
 
+    function setCoord(latitude, longitude)
+    {
+        txtLocLatitude.text = latitude;
+        txtLocLongitude.text = longitude;
+    }
+
     MapPage {
         id: mapPage
     }
@@ -100,11 +106,14 @@ Page{
         }
         width: 180
         text: qsTr("Fill From Map")
-        //onClicked: appWindow.pageStack.push(mapPage) // doing this way everywhere is dumb because everything is created too early, gps activates when u launch the app.
+        //onClicked: appWindow.pageStack.push(mapPage)
+        //doing this way everywhere seems dumb because everything is created too early,
+        //gps activates when u launch the app. but it still does that.
         onClicked: {
             appWindow.pageStack.push(Qt.resolvedUrl("MapPage.qml"),
-                                     {longitudeReq: txtLocLongitude.text, latitudeReq: txtLocLatitude.text} );
-                                   //{longitudeReq: -113.485336, latitudeReq: 53.533064} );
+              {longitudeReq: txtLocLongitude.text, latitudeReq: txtLocLatitude.text, radiusSize: txtLocRadius.text} );
+
+
         }
     }
 
