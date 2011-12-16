@@ -10,25 +10,6 @@ Page{
     property int  radiusSize: 500
     property variant ruleCircleObj
 
-//    Component{
-//        id: ruleCircle
-//        MapCircle {}
-//    }
-
-//    function putRuleCircle(){
-//       // var ruleCircleObj = ruleCircle.createObject(mapPage);
-//        map.removeMapObject(ruleCircleObj)
-//        ruleCircleObj = ruleCircle.createObject(mapPage);
-//        ruleCircleObj.border.color = "orange" //stupid read only properties cause this mess
-//        ruleCircleObj.border.width = 4
-//        ruleCircleObj.radius = radiusSize
-//        ruleCircleObj.center = map.center
-//        ruleCircleObj.z = 55 //doesn't work
-//        ruleCircleObj.opacity = 0.5 //why the **** doesn't this work either?
-//        ruleCircleObj.center = ruleCoordForCircleObj
-//        map.addMapObject(ruleCircleObj)
-//    }
-
     Component.onCompleted: {
       //  putRuleCircle();
     }
@@ -43,12 +24,7 @@ Page{
             //putRuleCircle();
         }
     }
-//    Coordinate{
-//        id: ruleCoordForCircleObj
-//        altitude: 0;
-//        longitude: longitudeReq;
-//        latitude: latitudeReq;
-//    }
+
 
     Coordinate{
         id: ruleCoordForMap

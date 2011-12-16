@@ -2,7 +2,7 @@ import QtQuick 1.1
 import com.nokia.meego 1.0
 
 Page{
-    tools: commonTools
+    //tools: commonTools
     id: rulePage
     property string mode
 
@@ -12,13 +12,25 @@ Page{
         txtLocLongitude.text = longitude;
     }
 
+    function setTime(whichTime, timeToSet)
+    {
+        if (whichTime == 1)
+        {
+            btnTime1.text = timeToSet
+        }
+        if (whichTime == 2)
+        {
+            btnTime2.text = timeToSet
+        }
+    }
+
     MapPage {
         id: mapPage
     }    
 
     Flickable{
     anchors.fill: parent
-    contentHeight: 500
+    contentHeight: 1000
         MouseArea {//not sure why but if you don't do this the keyboard won't close when you try to click away from the input fields
             anchors.fill: parent
             onClicked: {txtLocLongitude.closeSoftwareInputPanel();}
@@ -70,7 +82,7 @@ Page{
             onCheckedChanged: {
                 txtLocRadius.enabled = swUseLocation.checked;
                 txtLocLatitude.enabled = swUseLocation.checked;
-                txtLocLongitude.enabled = swUseLocation.checked;
+                txtLocLongitude.enabled = swUseLocation.checked;//should grey these out
             }
         }
         Label{
@@ -248,9 +260,7 @@ Page{
             anchors.left: parent.left
             checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Calendar/enabled",true)
             onCheckedChanged: {
-                txtLocRadius.enabled = swUseLocation.checked;
-                txtLocLatitude.enabled = swUseLocation.checked;
-                txtLocLongitude.enabled = swUseLocation.checked;
+
             }
         }
         Label{
@@ -279,6 +289,7 @@ Page{
             checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Calendar/NOT",false)
         }
         Rectangle{
+            id:recCalendarKeywords
             width: parent.width - 20
             height: 45
             anchors.top: swUseCalendarNOT.bottom
@@ -309,8 +320,70 @@ Page{
             }
         }}
 
+        //////////////////////////TIMES
 
+        Switch{
+            id: swUseTime
+            anchors.top: recCalendarKeywords.bottom
+            anchors.left: parent.left
+            checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Time/enabled",true)
+            onCheckedChanged: {
+                txtLocRadius.enabled = swUseLocation.checked;
+                txtLocLatitude.enabled = swUseLocation.checked;
+                txtLocLongitude.enabled = swUseLocation.checked;
+            }
+        }
+        Label{
+            anchors.top: recCalendarKeywords.bottom
+            anchors.left: swUseTime.right
+            height: swUseTimeNot.height
+            verticalAlignment: Text.AlignVCenter
+            text: "Between these times"
+            color: "black"
+        }
+        Label{
+            anchors.top: recCalendarKeywords.bottom
+            anchors.right: swUseTimeNot.left
+            height: swUseTimeNot.height
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignRight
+            text: "NOT"
+            font.pixelSize: 24
+            color: "black"
 
+        }
+        Switch{
+            id: swUseTimeNot
+            anchors.top: recCalendarKeywords.bottom
+            anchors.right: parent.right
+            checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Time/NOT",false)
+        }
+        Button{
+            id: btnTime1
+            anchors {
+                left: parent.left
+                top: swUseTimeNot.bottom
+            }
+            width: 150
+            text: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Time/TIME1","set time 1")
+            onClicked: {
+                appWindow.pageStack.push(Qt.resolvedUrl("TimePicker.qml"),
+                  {time: 1} );
+            }
+        }
+        Button{
+            id: btnTime2
+            anchors {
+                left: btnTime1.right
+                top: swUseTimeNot.bottom
+            }
+            width: 150
+            text: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Time/TIME2","set time 2")
+            onClicked: {
+                appWindow.pageStack.push(Qt.resolvedUrl("TimePicker.qml"),
+                  {time: 2} );
+            }
+        }
         //////////////////////////SAVE  OR CANCEL
 
         Button{
@@ -324,7 +397,7 @@ Page{
             onClicked: appWindow.pageStack.pop()
         }
         Button{
-            id: btn
+            id: btnSave
             anchors {
                 right: btnCancel.left
                 bottom: parent.bottom
@@ -332,10 +405,9 @@ Page{
             width: 150
             text: qsTr("Save")
             onClicked: {
-                objQSettings.setValue()
+                //objQSettings.setValue()
                 appWindow.pageStack.pop()
             }
-
         }
     }
 }
