@@ -7,6 +7,15 @@ Page {
 
     property string selectedRuleName
 
+    function resetList(){
+        objProximusUtils.refreshRulesModel();
+        rulesList.currentIndex = -1;
+        btnEnable.visible = false;
+        btnDisable.visible = false;
+        btnEdit.enabled = false;
+        btnDelete.enabled = false;
+    }
+
     RulePage {
         id: rulePage
     }
@@ -38,11 +47,29 @@ Page {
             color: "black"
         }
     }
+    Row{
+        id: rowSettings2
+        spacing: 10
+        anchors.top: rowSettings1.bottom
+        Switch{
+            id: swService
+            checked: objQSettings.getValue("settings/Service",false)
+            onCheckedChanged: {objQSettings.setValue("settings/Service",swGPS.checked) }
+        }
+        Text{
+            width: rowSettings2.width - rowSettings2.spacing - swService.width
+            height: swGPS.height
+            verticalAlignment: Text.AlignVCenter
+            text: "Enable Service"
+            font.pixelSize: 25
+            color: "black"
+        }
+    }
     Label {
         id: lblRules
         //anchors.centerIn: parent
         anchors{
-            top: rowSettings1.bottom
+            top: rowSettings2.bottom
             topMargin: 10
         }
         text: qsTr("Rules:")
@@ -69,6 +96,7 @@ Page {
             top: btnNew.bottom
             topMargin: 10
         }
+        enabled: false
         width: 150
         text: qsTr("Edit")
         onClicked: {
@@ -77,49 +105,51 @@ Page {
         }
     }
     Button{
-
         id: btnEnable
         anchors {
             right: parent.right
             top: btnEdit.bottom
             topMargin: 10
         }
+        visible: false
         width: 150
         text: qsTr("Enable")
-        onClicked: label.visible = true
+        onClicked: {
+        objQSettings.setValue("/rules/" +  tabSettings.selectedRuleName + "/enabled",true)
+        resetList();
+        }
     }
     Button{
         id: btnDisable
+        anchors {
+            right: parent.right
+            top: btnEdit.bottom
+            topMargin: 10
+        }
+        visible: false
+        width: 150
+        text: qsTr("Disable")
+        onClicked: {
+        objQSettings.setValue("/rules/" +  tabSettings.selectedRuleName + "/enabled",false)
+        resetList();
+        }
+    }
+    Button{
+        id: btnDelete
+        enabled: false
         anchors {
             right: parent.right
             top: btnEnable.bottom
             topMargin: 10
         }
         width: 150
-        text: qsTr("Disable")
-        onClicked: label.visible = true
-    }
-    Button{
-        id: btnDelete
-        anchors {
-            right: parent.right
-            top: btnDisable.bottom
-            topMargin: 10
-        }
-        width: 150
         text: qsTr("Delete")
-        onClicked: label.visible = true
+        onClicked: {
+            objQSettings.remove("/rules/"+  tabSettings.selectedRuleName)
+        resetList();
+        }
     }
 
-//    Rectangle{
-//        color: "red"
-//        anchors {
-//            top: lblRules.bottom
-//            left: parent.left
-//            right: btnDelete.left
-//        }
-//        height: tabSettings.height - 175
-//    }
     ListView{
         id: rulesList
         model: objRulesModel
@@ -128,10 +158,20 @@ Page {
             height: 40;
             font.pixelSize: 25;
             text: "Rule " + index + " " + model.modelData.name;
-            color:(model.modelData.enabled = true)?'green':'red';
+            color:(model.modelData.enabled == true)?'green':'red';
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
+                    if (model.modelData.enabled == true){
+                        btnDisable.visible = true
+                        btnEnable.visible = false
+                    }
+                    else{
+                        btnEnable.visible = true
+                        btnDisable.visible = false
+                    }
+                    btnEdit.enabled = true;
+                    btnDelete.enabled = true;
                     rulesList.currentIndex = index
                     tabSettings.selectedRuleName =  model.modelData.name;
                 }
@@ -143,7 +183,7 @@ Page {
             right: btnDelete.left
            // bottom: parent.bottom
         }
-        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+        highlight: Rectangle {color: "lightsteelblue"; radius: 6; width: rulesList.width}
         focus: true
         Component.onCompleted: {//not sure how to get already selected name, just remove highlight then...
             rulesList.currentIndex = -1;

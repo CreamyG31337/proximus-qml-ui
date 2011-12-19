@@ -3,6 +3,7 @@
 #include <QtDeclarative/QDeclarativeEngine>
 #include <MDeclarativeCache>
 #include <main.h>
+#include <profileclient.h>
 
 MySettings::MySettings()
 {
@@ -10,6 +11,37 @@ MySettings::MySettings()
 MySettings::~MySettings()
 {
 
+}
+
+QString ProximusUtils::isServiceRunning()
+{
+    QProcess p;
+    QString output;
+    //needs root :(
+    //p.start("/sbin/status apps/proximus-daemon");
+    p.start("/bin/pidof proximus-daemon");
+    p.waitForFinished(-1);
+    output = p.readAllStandardOutput();
+    qDebug() << output;
+    qDebug() << "e:" + p.readAllStandardError();
+    if (output.length() > 1)
+        return "daemon appears to be running as pid " + output;
+    else
+        return "error - cannot find pid of daemon!";
+}
+
+void ProximusUtils::refreshRulesModel()
+{
+    rules_ptr->clear();
+    MySettings tmpSettings;
+    tmpSettings.beginGroup("rules");
+    Q_FOREACH(const QString &strRuleName, tmpSettings.childGroups()){//for each rule
+        tmpSettings.beginGroup(strRuleName);
+        rules_ptr->append(new RuleObject(strRuleName,tmpSettings.getValue("enabled",false).toBool()));
+        tmpSettings.endGroup();
+    }
+    tmpSettings.endGroup();//end rules
+    view_ptr->rootContext()->setContextProperty("objRulesModel", QVariant::fromValue(*rules_ptr));
 }
 
 RuleObject::RuleObject(QString name, bool enabled)
@@ -50,10 +82,14 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Proximus");
 
     QScopedPointer<QApplication> app(MDeclarativeCache::qApplication(argc, argv));
-    QScopedPointer<QDeclarativeView> view(MDeclarativeCache::qDeclarativeView());
+    QSharedPointer<QDeclarativeView> view(MDeclarativeCache::qDeclarativeView());
+
+    ProximusUtils objproximusUtils;
 
     MySettings objSettings;
     QList<QObject*> rulesList;
+    objproximusUtils.rules_ptr = &rulesList;//set refs for later
+    objproximusUtils.view_ptr = view;
 
     objSettings.beginGroup("settings");
     if (!objSettings.contains("GPS")) //first run, need to create default settings
@@ -71,19 +107,27 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
         objSettings.setValue("Example Rule1/Location/LONGITUDE",(double)-113.485336);
         objSettings.setValue("Example Rule1/Location/LATITUDE",(double)53.533064);
 
-        objSettings.setValue("Example Rule2/enabled",(bool)true);
+        objSettings.setValue("Example Rule2/enabled",(bool)false);
         objSettings.setValue("Example Rule2/Location/enabled",(bool)true);
         objSettings.setValue("Example Rule2/Location/NOT",(bool)false);
         objSettings.setValue("Example Rule2/Location/RADIUS",(double)250);
         objSettings.setValue("Example Rule2/Location/LONGITUDE",(double)-113.485336);
         objSettings.setValue("Example Rule2/Location/LATITUDE",(double)53.533064);
-//    }        
+//    }
+
     Q_FOREACH(const QString &strRuleName, objSettings.childGroups()){//for each rule
         objSettings.beginGroup(strRuleName);
         rulesList.append(new RuleObject(strRuleName,objSettings.getValue("enabled",false).toBool()));
         objSettings.endGroup();
     }
+
     objSettings.endGroup();//end rules
+
+    ProfileClient *profileClient = new ProfileClient(NULL);
+
+    view->rootContext()->setContextProperty("objProfileClient",profileClient);
+
+    view->rootContext()->setContextProperty("objProximusUtils",&objproximusUtils);
     view->rootContext()->setContextProperty("objQSettings",&objSettings);
     view->rootContext()->setContextProperty("objRulesModel", QVariant::fromValue(rulesList));
 
@@ -95,4 +139,5 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     view->showFullScreen();
 
     app->exec();
+
 }

@@ -7,11 +7,13 @@ Page {
 
     TextArea {
         id: txtLog
-        text: qsTr("Welcome to Proximus\n Log goes here")
+        text: qsTr("Welcome to Proximus")
         anchors {top: parent.top; left: parent.left; right: parent.right;}
         readOnly: true;
     }
-
+    Component.onCompleted: {
+        txtLog.text += "\n" + objProximusUtils.isServiceRunning();
+    }
 
 //    Rectangle{
 //        color: "red"

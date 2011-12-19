@@ -13,7 +13,19 @@
 #include <QtCore/QObject>
 #include <QtCore/QAbstractListModel>
 #include <QtCore/QScopedPointer>
+#include <QProcess>
+#include <QDebug>
+#include <QSharedPointer>
 
+class ProximusUtils : public QObject
+{
+    Q_OBJECT
+public:
+    Q_INVOKABLE QString isServiceRunning();
+    Q_INVOKABLE void refreshRulesModel();
+    QList<QObject*> *rules_ptr;
+    QSharedPointer<QDeclarativeView> view_ptr;
+};
 
 //annoying wrapper class for qsettings
 class MySettings : public QObject
@@ -43,6 +55,9 @@ public:
     Q_INVOKABLE QString group(){
         return qsettInternal.group();
     }
+    Q_INVOKABLE void remove(QString key){
+        qsettInternal.remove(key);
+    }
 private:
     QSettings qsettInternal;
 };
@@ -64,5 +79,4 @@ private:
     QString strname;
     bool boolenabled;
 };
-
 #endif // MAIN_H

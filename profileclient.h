@@ -34,7 +34,7 @@ class ProfileClient : public QObject
 public:
     ProfileClient(QObject*);
     bool setProfile(QString profileName);
-    QStringList profileTypes() const;
+    Q_INVOKABLE QStringList profileTypes() const;
 Q_SIGNALS:
     void changed();
 private:
