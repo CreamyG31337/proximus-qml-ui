@@ -5,12 +5,12 @@
 #include <main.h>
 #include <profileclient.h>
 
-MySettings::MySettings()
-{
+MySettings::MySettings():
+    qsettInternal(new QSettings("/home/user/.config/FakeCompany/Proximus.conf",QSettings::NativeFormat,this))
+{  
 }
 MySettings::~MySettings()
 {
-
 }
 
 QString ProximusUtils::isServiceRunning()
@@ -27,7 +27,7 @@ QString ProximusUtils::isServiceRunning()
     if (output.length() > 1)
         return "daemon appears to be running as pid " + output;
     else
-        return "error - cannot find pid of daemon!";
+        return "error - cannot find pid of daemon! May be normal if you just started the device.";
 }
 
 void ProximusUtils::refreshRulesModel()
@@ -63,11 +63,13 @@ QString RuleObject::name()
 void RuleObject::setEnabled(bool enabled)
 {
     boolenabled = enabled;
+    emit myModelChanged();
 }
 
 void RuleObject::setName(QString name)
 {
     strname = name;
+    emit myModelChanged();
 }
 
 RuleObject::~RuleObject()
@@ -91,15 +93,16 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
     objproximusUtils.rules_ptr = &rulesList;//set refs for later
     objproximusUtils.view_ptr = view;
 
-    objSettings.beginGroup("settings");
-    if (!objSettings.contains("GPS")) //first run, need to create default settings
-    {
-        objSettings.setValue("GPS",false);
-    }
-    objSettings.endGroup();//end settings
-    objSettings.beginGroup("rules");
-    //if (objSettings.childGroups().count() == 0) //first run, or no rules -- create one example rule
+//    objSettings.beginGroup("settings");
+//    if (!objSettings.contains("GPS")) //first run, need to create default settings
 //    {
+//        objSettings.setValue("GPS/enabled",false);
+//        objSettings.setValue("Service/enabled",true);
+//    }
+//    objSettings.endGroup();//end settings
+    objSettings.beginGroup("rules");
+    if (objSettings.childGroups().count() == 0) //first run, or no rules -- create two example rules
+    {
         objSettings.setValue("Example Rule1/enabled",(bool)true);
         objSettings.setValue("Example Rule1/Location/enabled",(bool)true);
         objSettings.setValue("Example Rule1/Location/NOT",(bool)false);
@@ -113,7 +116,7 @@ Q_DECL_EXPORT int main(int argc, char *argv[])
         objSettings.setValue("Example Rule2/Location/RADIUS",(double)250);
         objSettings.setValue("Example Rule2/Location/LONGITUDE",(double)-113.485336);
         objSettings.setValue("Example Rule2/Location/LATITUDE",(double)53.533064);
-//    }
+    }
 
     Q_FOREACH(const QString &strRuleName, objSettings.childGroups()){//for each rule
         objSettings.beginGroup(strRuleName);

@@ -1,11 +1,11 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
-import com.nokia.extras 1.0
+import com.nokia.extras 1.1
 
 Page{
     //tools: commonTools
     id: rulePage
-    property string mode
+    property string ruleName: "InvalidRuleName"
 
     function setCoord(latitude, longitude)
     {
@@ -31,6 +31,12 @@ Page{
         errorMessageBanner.show();
     }
 
+    Timer {
+        id:sliderTimer
+        interval: 3000; running: false; repeat: false
+        onTriggered: radiusSlider.enabled = true
+    }
+
     MapPage {
         id: mapPage
     }    
@@ -43,62 +49,39 @@ Page{
     Flickable{
     anchors.fill: parent
     contentHeight: 600
-        MouseArea {//not sure why but if you don't do this the keyboard won't close when you try to click away from the input fields
-            anchors.fill: parent
-            onClicked: {txtLocLongitude.closeSoftwareInputPanel();}
-            }
-        Label {
-            id: lblRuleName
-            anchors.top : parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            verticalAlignment: Text.AlignVCenter
-            text: mode + " rule "
-            height: 45
-        }
-        Rectangle{
-            id: recRuleName
-            anchors.top: lblRuleName.top
+        TextField{
+            anchors.top: parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             width: 300
             height: 45
-            border.width: 2
-            border.color: "#4b4b4b"
-            color: "white"
-            radius: 5
-            TextInput{
-                width: parent.width
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                id: txtRuleName
-                text: tabSettings.selectedRuleName //if blank...
-                font.pixelSize: 26
-                //validator:
-                maximumLength: 64
+            id: txtRuleName
+            text:{ if (ruleName != "InvalidRuleName")
+                {text = ruleName}
             }
+            placeholderText: "Enter Name For This Rule"
+            font.pixelSize: 26
+            validator: RegExpValidator{regExp: /(\w+ *)+/}
+            maximumLength: 64
         }
+
 ////////////////////////ACTIONS
         Label{
             id: lblActionHeader
             text: "Action to take"
-            anchors.top: recRuleName.bottom
+            anchors.top:  txtRuleName.bottom
             height: 20
             visible: false
         }
         Switch{
             anchors.top: lblActionHeader.bottom
             id: swChangeProfile
-            checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Actions/Run/enabled",true)
-            onCheckedChanged: {
-                radiusSlider.enabled = swUseLocation.checked;
-                txtLocLatitude.enabled = swUseLocation.checked;
-                txtLocLongitude.enabled = swUseLocation.checked;
-            }
+            checked: objQSettings.getValue("/rules/" + ruleName + "/Actions/Profile/enabled",true)
         }
         Label{
             id: lblSwProfile
             anchors.top: lblActionHeader.bottom
             anchors.left: swChangeProfile.right
-            height: swGPS.height
+            height: swUseLocation.height
             verticalAlignment: Text.AlignVCenter
             text: "Switch Profile "
         }
@@ -106,8 +89,9 @@ Page{
             id: btnChooseProfile
             anchors.left: lblSwProfile.right
             anchors.verticalCenter: lblSwProfile.verticalCenter
-            text: "choose"
+            text: objQSettings.getValue("/rules/" + ruleName + "/Actions/Profile/NAME","choose")
             onClicked: tDialog.open();
+            enabled: swChangeProfile.checked
         }
         TumblerDialog{
             id: tDialog
@@ -132,17 +116,12 @@ Page{
         Switch{
             anchors.top: lblActivationHeader.bottom
             id: swUseLocation
-            checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Location/enabled",true)
-            onCheckedChanged: {
-                radiusSlider.enabled = swUseLocation.checked;
-                txtLocLatitude.enabled = swUseLocation.checked;
-                txtLocLongitude.enabled = swUseLocation.checked;//should grey these out
-            }
+            checked: objQSettings.getValue("/rules/" + ruleName + "/Location/enabled",true)
         }
         Label{
             anchors.top: lblActivationHeader.bottom
             anchors.left: swUseLocation.right
-            height: swGPS.height
+            height: swUseLocation.height
             verticalAlignment: Text.AlignVCenter
             text: "Location match"
             color: "black"
@@ -150,7 +129,7 @@ Page{
         Label{
             anchors.top: lblActivationHeader.bottom
             anchors.right: swUseLocationNot.left
-            height: swGPS.height
+            height: swUseLocation.height
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignRight
             text: "NOT"
@@ -162,7 +141,8 @@ Page{
             id: swUseLocationNot
             anchors.top: lblActivationHeader.bottom
             anchors.right: parent.right
-            checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Location/NOT",false)
+            checked: objQSettings.getValue("/rules/" + ruleName + "/Location/NOT",false)
+            enabled: swUseLocation.checked
         }
 
         Label {
@@ -174,19 +154,47 @@ Page{
         }
         CountBubble{
             id: cbRadius
-            //anchors.top: swUseLocation.bottom
             anchors.verticalCenter: lblLocationRadius.verticalCenter
             anchors.left: lblLocationRadius.right
             value: radiusSlider.value
             largeSized: true
+            onValueChanged: {
+                if (cbRadius.value == radiusSlider.maximumValue && radiusSlider.pressed){
+                    radiusSlider.enabled = false
+                    showError("Increasing max range...\nClick somewhere in the middle if you want to adjust it further")
+                    radiusSlider.maximumValue = radiusSlider.maximumValue * 10
+                    radiusSlider.stepSize = radiusSlider.stepSize * 10
+                    sliderTimer.start()
+
+                }
+                if (cbRadius.value == 0 && radiusSlider.stepSize >= 10 && radiusSlider.pressed){ //don't need fractions
+                    radiusSlider.enabled = false
+                    showError("Decreasing max range...\nClick somewhere in the middle if you want to adjust it further")
+                    radiusSlider.maximumValue = radiusSlider.maximumValue / 10
+                    radiusSlider.stepSize = radiusSlider.stepSize / 10
+                    sliderTimer.start()
+                }
+            }
         }
         Slider{
             id: radiusSlider
             width: parent.width - lblLocationRadius.width - cbRadius.width
             anchors.verticalCenter: lblLocationRadius.verticalCenter
             anchors.left: cbRadius.right
+            value: objQSettings.getValue("/rules/" + ruleName + "/Location/RADIUS",100)
             stepSize: 10
             maximumValue: 2000
+            enabled: swUseLocation.checked
+            Component.onCompleted: {
+                if (value > maximumValue)
+                {
+                    while (value > maximumValue)
+                    {
+                        maximumValue = maximumValue * 10
+                        stepSize = stepSize * 10
+                    }
+                }
+            }
         }
         Label {
             height: 45
@@ -195,62 +203,46 @@ Page{
             id: lblLocationLatitude
             text: "Latitude: "
         }
-        Rectangle{
-            id: recLatitude
+
+        TextField{
+            id: txtLocLatitude
             anchors.top: radiusSlider.bottom
-            anchors.left: recLongitude.left
+            anchors.left: txtLocLongitude.left
             width: 180
             height: 45
-            border.width: 2
-            border.color: "#4b4b4b"
-            color: "white"
-            radius: 5
-            TextInput{
-              //  height: parent.height
-                width: parent.width
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                id: txtLocLatitude
-                text: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Location/LATITUDE",0)
-                font.pixelSize: 26
-                validator: DoubleValidator{}
-                maximumLength: 13
-            }
+            text: objQSettings.getValue("/rules/" + ruleName + "/Location/LATITUDE",0)
+            font.pixelSize: 21
+            validator: DoubleValidator{}
+            maximumLength: 13
+            placeholderText: "click this >>"
+            enabled: swUseLocation.checked
         }
-
         Label {
-            anchors.top: recLatitude.bottom
+            anchors.top: txtLocLatitude.bottom
             height: 45
             verticalAlignment: Text.AlignVCenter
             id: lblLocationLongitude
             text: "Longitude: "
         }
-        Rectangle{
-            id: recLongitude
-            anchors.top: recLatitude.bottom
+        TextField{
+            id: txtLocLongitude
+            anchors.top: txtLocLatitude.bottom
             anchors.left: lblLocationLongitude.right
             width: 180
             height: 45
-            border.width: 2
-            border.color: "#4b4b4b"
-            color: "white"
-            radius: 5
-            TextInput{
-                width: parent.width
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                id: txtLocLongitude
-                text: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Location/LONGITUDE",0)
-                font.pixelSize: 26
-                validator: DoubleValidator{}
-                maximumLength: 13
-            }
+            text: objQSettings.getValue("/rules/" + ruleName + "/Location/LONGITUDE",0)
+            font.pixelSize: 21
+            validator: DoubleValidator{}
+            maximumLength: 13
+            placeholderText: "click this >>"
+            enabled: swUseLocation.checked
         }
+
         Button{
             id: btnFillFromMap
             anchors {
                 right: parent.right
-                top: recLatitude.top
+                top: txtLocLatitude.top
             }
             width: 170
             height: 45*2
@@ -258,11 +250,14 @@ Page{
             //onClicked: appWindow.pageStack.push(mapPage)
             //doing this way everywhere seems dumb because everything is created too early,
             //gps activates when u launch the app. but it still does that.
-            onClicked: {
+            onClicked: {                
+                if (cbRadius.value < 10) cbRadius.value = 10;//not much point trying to choose a 0 radius
                 appWindow.pageStack.push(Qt.resolvedUrl("MapPage.qml"),
-                  {longitudeReq: txtLocLongitude.text, latitudeReq: txtLocLatitude.text, radiusSize: cbRadius.value} );
+                                         {longitudeReq: txtLocLongitude.text, latitudeReq: txtLocLatitude.text,
+                                             radiusSize: cbRadius.value} );
             }
             style: PositiveButtonStyle {}
+            enabled: swUseLocation.checked
         }
         /////////////////////////CALENDAR
 
@@ -270,10 +265,7 @@ Page{
             id: swUseCalendar
             anchors.top: btnFillFromMap.bottom
             anchors.left: parent.left
-            checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Calendar/enabled",true)
-            onCheckedChanged: {
-
-            }
+            checked: objQSettings.getValue("/rules/" + ruleName + "/Calendar/enabled",true)
         }
         Label{
             anchors.top: btnFillFromMap.bottom
@@ -298,44 +290,32 @@ Page{
             id: swUseCalendarNOT
             anchors.right: parent.right
             anchors.top: btnFillFromMap.bottom
-            checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Calendar/NOT",false)
+            checked: objQSettings.getValue("/rules/" + ruleName + "/Calendar/NOT",false)
+            enabled: swUseCalendar.checked
         }
-        Rectangle{
-            id:recCalendarKeywords
+        TextField{
+            id: txtCalendarKeywords
             width: parent.width - 20
             height: 45
             anchors.top: swUseCalendarNOT.bottom
             anchors.horizontalCenter: parent.horizontalCenter
-            border.width: 2
-            border.color: "#4b4b4b"
-            color: "white"
-            radius: 5
-            TextInput{
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: parent.width
-                id: txtCalendarKeywords
-                text: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Calendar/KEYWORDS","")
-                font.pixelSize: 26
-                //validator:
-                maximumLength: 255
-            }
+            text: objQSettings.getValue("/rules/" + ruleName + "/Calendar/KEYWORDS","")
+            placeholderText: "enter keywords seperated by spaces"
+            font.pixelSize: 26
+            validator: RegExpValidator{regExp: /(\w+ *)+/}
+            maximumLength: 255
+            enabled: swUseCalendar.checked
         }
 
         //////////////////////////TIMES
         Switch{
             id: swUseTime
-            anchors.top: recCalendarKeywords.bottom
+            anchors.top: txtCalendarKeywords.bottom
             anchors.left: parent.left
-            checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Time/enabled",true)
-            onCheckedChanged: {
-                radiusSlider.enabled = swUseLocation.checked;
-                txtLocLatitude.enabled = swUseLocation.checked;
-                txtLocLongitude.enabled = swUseLocation.checked;
-            }
+            checked: objQSettings.getValue("/rules/" + ruleName + "/Time/enabled",true)
         }
         Label{
-            anchors.top: recCalendarKeywords.bottom
+            anchors.top: txtCalendarKeywords.bottom
             anchors.left: swUseTime.right
             height: swUseTimeNot.height
             verticalAlignment: Text.AlignVCenter
@@ -343,7 +323,7 @@ Page{
             color: "black"
         }
         Label{
-            anchors.top: recCalendarKeywords.bottom
+            anchors.top: txtCalendarKeywords.bottom
             anchors.right: swUseTimeNot.left
             height: swUseTimeNot.height
             verticalAlignment: Text.AlignVCenter
@@ -355,9 +335,10 @@ Page{
         }
         Switch{
             id: swUseTimeNot
-            anchors.top: recCalendarKeywords.bottom
+            anchors.top: txtCalendarKeywords.bottom
             anchors.right: parent.right
-            checked: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Time/NOT",false)
+            checked: objQSettings.getValue("/rules/" + ruleName + "/Time/NOT",false)
+            enabled: swUseTime.checked
         }
         TumblerButton{
             id: btnTime1
@@ -366,12 +347,13 @@ Page{
                 top: swUseTimeNot.bottom
             }
             width: 200
-            text: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Time/TIME1","set time 1")
+            text: objQSettings.getValue("/rules/" + ruleName + "/Time/TIME1","set time 1")
             onClicked: {
                 appWindow.pageStack.push(Qt.resolvedUrl("TimePicker.qml"),
                   {time: 1} );
             }
             style: TumblerButtonStyle {}
+            enabled: swUseTime.checked
         }
         TumblerButton{
             id: btnTime2
@@ -380,11 +362,12 @@ Page{
                 top: swUseTimeNot.bottom
             }
             width: 200
-            text: objQSettings.getValue("/rules/" + tabSettings.selectedRuleName + "/Time/TIME2","set time 2")
+            text: objQSettings.getValue("/rules/" + ruleName + "/Time/TIME2","set time 2")
             onClicked: {
                 appWindow.pageStack.push(Qt.resolvedUrl("TimePicker.qml"),
                   {time: 2} );
             }
+            enabled: swUseTime.checked
         }
         //////////////////////////SAVE  OR CANCEL
 
@@ -396,7 +379,9 @@ Page{
             }
             width: 150
             text: qsTr("Cancel")
-            onClicked: appWindow.pageStack.pop()
+            onClicked: {
+                appWindow.pageStack.pop()
+            }
         }
         Button{
             id: btnSave
@@ -407,22 +392,47 @@ Page{
             width: 150
             text: qsTr("Save")
             onClicked: {
-                var errorString = "";
-                if (txtRuleName.text.length < 1)
+                var errorString = "";                
+                if (!txtRuleName.acceptableInput)
                 {
-                    errorString = "Rule name is blank or not valid"
+                    errorString += "Rule name is blank or not valid\n"
+                }
+
+                if (txtCalendarKeywords.enabled && !txtCalendarKeywords.acceptableInput)
+                {
+                    errorString += "Enter calendar keywords or disable that section\n"
+                }
+
+                if (btnTime1.enabled && (btnTime1.text == "set time 1" || btnTime2.text == "set time 2"))
+                {
+                    errorString += "Set valid times for both Time 1 and Time 2 or disable that section\n"
+                }
+
+                if (btnTime1.enabled && (btnTime1.text == btnTime2.text))
+                {
+                    errorString += "Time1 and Time2 must be different if time checking is enabled\n"
+                }
+
+                if (txtLocLatitude.enabled && (!txtLocLatitude.acceptableInput || !txtLocLongitude.acceptableInput ))
+                {
+                    errorString += "Use the fill from map button, manually enter valid coordinates, or disable that section\n"
+
+                }
+                if (errorString.length > 1)
+                {
                     showError(errorString);
                     return;
                 }
 
                 //check if name changed and remove old one if so
-                if (tabSettings.selectedRuleName != txtRuleName.text)
+                if (ruleName != txtRuleName.text)
                 {
-                    objQSettings.remove("/rules/" + tabSettings.selectedRuleName)
+                    objQSettings.remove("/rules/" + ruleName)
+                    console.log("replacing " + ruleName + " with " + txtRuleName.text)
                 }
 
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Actions/Profile/enabled",swChangeProfile.checked);
-                //set selected profile
+                objQSettings.setValue("/rules/" + txtRuleName.text + "/Actions/Profile/NAME", btnChooseProfile.text);
 
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Location/enabled",swUseLocation.checked);
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Location/NOT",swUseLocationNot.checked);
@@ -439,9 +449,8 @@ Page{
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Calendar/NOT",swUseCalendarNOT.checked);
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Calendar/KEYWORDS",txtCalendarKeywords.text);
 
-                txtLocLongitude.closeSoftwareInputPanel(); // is this my job? i am the manager of keyboards :(
+                objProximusUtils.refreshRulesModel(); //why can't i call the function now??
                 appWindow.pageStack.pop()
-                resetList();
             }
         }
     }

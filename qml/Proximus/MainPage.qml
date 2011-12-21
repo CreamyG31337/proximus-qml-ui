@@ -20,7 +20,7 @@ Page {
                 text: "Status"
             }
             TabButton {
-                tab: tabSettings
+                tab: settingsPage
                 text: "Settings"
             }
         }
@@ -46,7 +46,7 @@ Page {
         }
         // define the content for tab 2
         SettingsPage {
-            id: tabSettings
+            id: settingsPage
             anchors { fill: tabGroup;}
         }
     }
@@ -56,6 +56,12 @@ Page {
         MenuLayout {
             MenuItem { text: qsTr("About Proximus") }
             MenuItem { text: qsTr("Report Bug") }
+            MenuItem { text: qsTr("Clear Settings")
+                onClicked: {
+                    objQSettings.clear()
+                    objProximusUtils.refreshRulesModel();
+                }
+            }
         }
     }
 }

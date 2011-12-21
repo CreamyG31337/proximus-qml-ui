@@ -2,7 +2,7 @@ import QtQuick 1.1
 import com.nokia.meego 1.0
 
 Page {
-    id: tabSettings
+    id: settingsPage
     tools: commonTools
 
     property string selectedRuleName
@@ -14,10 +14,6 @@ Page {
         btnDisable.visible = false;
         btnEdit.enabled = false;
         btnDelete.enabled = false;
-    }
-
-    RulePage {
-        id: rulePage
     }
 
     Label {
@@ -35,8 +31,8 @@ Page {
         anchors.top: lblSettings.bottom
         Switch{
             id: swGPS
-            checked: objQSettings.getValue("settings/GPS",true)
-            onCheckedChanged: {objQSettings.setValue("settings/GPS",swGPS.checked) }
+            checked: objQSettings.getValue("/settings/GPS/enabled",true)
+            onCheckedChanged: {objQSettings.setValue("/settings/GPS/enabled",swGPS.checked) }
         }
         Text{
             width: rowSettings1.width - rowSettings1.spacing - swGPS.width
@@ -53,8 +49,8 @@ Page {
         anchors.top: rowSettings1.bottom
         Switch{
             id: swService
-            checked: objQSettings.getValue("settings/Service",false)
-            onCheckedChanged: {objQSettings.setValue("settings/Service",swGPS.checked) }
+            checked: objQSettings.getValue("/settings/Service/enabled",false)
+            onCheckedChanged: {objQSettings.setValue("/settings/Service/enabled",swService.checked) }
         }
         Text{
             width: rowSettings2.width - rowSettings2.spacing - swService.width
@@ -83,10 +79,12 @@ Page {
         width: 150
         text: qsTr("New")
         onClicked: {
-            tabSettings.selectedRuleName = ""
+            settingsPage.selectedRuleName = ""
             rulesList.currentIndex = -1;
-            appWindow.pageStack.push(rulePage);
-            rulePage.mode = "new"
+            //appWindow.pageStack.push(rulePage);
+            appWindow.pageStack.push(Qt.resolvedUrl("RulePage.qml"))
+            //appWindow.pageStack.currentPage.mode = "new"
+            //rulePage.mode = "new"
         }
     }
     Button{
@@ -100,8 +98,10 @@ Page {
         width: 150
         text: qsTr("Edit")
         onClicked: {
-            appWindow.pageStack.push(rulePage);
-            rulePage.mode = "edit"
+            //appWindow.pageStack.push(rulePage);
+            appWindow.pageStack.push(Qt.resolvedUrl("RulePage.qml"),
+                                     {ruleName: settingsPage.selectedRuleName});
+           // appWindow.pageStack.currentPage.mode = "edit"
         }
     }
     Button{
@@ -115,7 +115,7 @@ Page {
         width: 150
         text: qsTr("Enable")
         onClicked: {
-        objQSettings.setValue("/rules/" +  tabSettings.selectedRuleName + "/enabled",true)
+        objQSettings.setValue("/rules/" +  settingsPage.selectedRuleName + "/enabled",true)
         resetList();
         }
     }
@@ -130,7 +130,7 @@ Page {
         width: 150
         text: qsTr("Disable")
         onClicked: {
-        objQSettings.setValue("/rules/" +  tabSettings.selectedRuleName + "/enabled",false)
+        objQSettings.setValue("/rules/" +  settingsPage.selectedRuleName + "/enabled",false)
         resetList();
         }
     }
@@ -145,7 +145,7 @@ Page {
         width: 150
         text: qsTr("Delete")
         onClicked: {
-            objQSettings.remove("/rules/"+  tabSettings.selectedRuleName)
+            objQSettings.remove("/rules/"+  settingsPage.selectedRuleName)
         resetList();
         }
     }
@@ -173,7 +173,7 @@ Page {
                     btnEdit.enabled = true;
                     btnDelete.enabled = true;
                     rulesList.currentIndex = index
-                    tabSettings.selectedRuleName =  model.modelData.name;
+                    settingsPage.selectedRuleName =  model.modelData.name;
                 }
             }
         }

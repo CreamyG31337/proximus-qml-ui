@@ -13,6 +13,7 @@ Page {
     }
     Component.onCompleted: {
         txtLog.text += "\n" + objProximusUtils.isServiceRunning();
+        txtLog.text += "\nSettings read from " + objQSettings.fileName();
     }
 
 //    Rectangle{

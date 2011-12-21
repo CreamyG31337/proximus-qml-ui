@@ -1,6 +1,7 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
 import QtMobility.location 1.2
+import com.nokia.extras 1.1
 
 Page{
     id: mapPage
@@ -12,7 +13,16 @@ Page{
 
     Component.onCompleted: {
       //  putRuleCircle();
+        instructionMessageBanner.text = "Drag the map to set target area.\nYou are the green circle.\nOrange circle is target radius.";
+        instructionMessageBanner.show();
     }
+
+    InfoBanner{
+        id: instructionMessageBanner
+        z: 99
+        timerShowTime: 5000 //5s
+    }
+
 
     PositionSource {
         id: myPositionSource
@@ -22,7 +32,7 @@ Page{
             //console.log(position.coordinate)
             //ruleCoordForCircleObj = map.toCoordinate(Qt.point(map.width / 2, map.height / 2)); //map.center;
             //putRuleCircle();
-        }
+        }        
     }
 
 
@@ -91,56 +101,59 @@ Page{
             id: ruleCircle
             color: Qt.rgba(1, 0.3, 0, 0.5)
             border.color: Qt.rgba(1, 0.3, 0, 0.7)
-            radius: radiusSize //this is too big when you zoom in
+            radius: radiusSize
             center: map.center
         }
     }
 
     PinchArea {
-         id: pincharea
+        id: pincharea
+        property double __oldZoom
+        anchors.fill: parent
 
-         property double __oldZoom
-
-         anchors.fill: parent
-
-         function calcZoomDelta(zoom, percent) {
+        function calcZoomDelta(zoom, percent) {
             return zoom + Math.log(percent)/Math.log(2)
-         }
+        }
 
-         onPinchStarted: {
+        onPinchStarted: {
             __oldZoom = map.zoomLevel
-         }
+        }
 
-         onPinchUpdated: {
+        onPinchUpdated: {
             map.zoomLevel = calcZoomDelta(__oldZoom, pinch.scale)
-         }
+        }
 
-         onPinchFinished: {
+        onPinchFinished: {
             map.zoomLevel = calcZoomDelta(__oldZoom, pinch.scale)
-         }
-      }
+            //console.debug(map.zoomLevel)
+            if (map.zoomLevel > 13)
+                myPosition.radius = myPositionSource.position.horizontalAccuracy
+            else
+                myPosition.radius = 500
+        }
+    }
 
-      MouseArea {
-         id: mousearea
+    MouseArea {
+        id: mousearea
 
-         property bool __isPanning: false
-         property int __lastX: -1
-         property int __lastY: -1
+        property bool __isPanning: false
+        property int __lastX: -1
+        property int __lastY: -1
 
-         anchors.fill : parent
+        anchors.fill : parent
 
-         onPressed: {
+        onPressed: {
             __isPanning = true
             __lastX = mouse.x
             __lastY = mouse.y
-         }
+        }
 
-         onReleased: {
-            __isPanning = false
+        onReleased: {
+           __isPanning = false
 
-         }
+        }
 
-         onPositionChanged: {
+        onPositionChanged: {
             if (__isPanning) {
                var dx = mouse.x - __lastX
                var dy = mouse.y - __lastY
@@ -148,11 +161,11 @@ Page{
                __lastX = mouse.x
                __lastY = mouse.y
             }
-         }
+        }
 
-         onCanceled: {
+        onCanceled: {
             __isPanning = false;
-         }
-      }
+        }
+    }
 }
 
