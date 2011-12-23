@@ -424,6 +424,12 @@ Page{
                     return;
                 }
 
+                //check, if about to replace, was old rule enabled or not? default to enabled if not replace
+                if (objQSettings.getValue("/rules/" + ruleName + "/enabled",true))
+                    objQSettings.setValue("/rules/" + txtRuleName.text +"/enabled",true)
+                else
+                    objQSettings.setValue("/rules/" + txtRuleName.text +"/enabled",false)
+
                 //check if name changed and remove old one if so
                 if (ruleName != txtRuleName.text)
                 {
@@ -442,8 +448,9 @@ Page{
 
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Time/enabled",swUseTime.checked);
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Time/NOT",swUseTimeNot.checked);
-                objQSettings.setValue("/rules/" + txtRuleName.text + "/Time/TIME1",btnTime1.text);
-                objQSettings.setValue("/rules/" + txtRuleName.text + "/Time/TIME2",btnTime2.text);
+                objQSettings.setValue("/rules/" + txtRuleName.text + "/Time/TIME1",btnTime1.text + ":00");
+                //console.log("time1/time2 " + btnTime1.text + btnTime2.text )
+                objQSettings.setValue("/rules/" + txtRuleName.text + "/Time/TIME2",btnTime2.text + ":00");
 
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Calendar/enabled",swUseCalendar.checked);
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Calendar/NOT",swUseCalendarNOT.checked);

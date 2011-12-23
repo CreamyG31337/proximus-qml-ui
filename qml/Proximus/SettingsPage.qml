@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import com.nokia.extras 1.1
 
 Page {
     id: settingsPage
@@ -16,6 +17,17 @@ Page {
         btnDelete.enabled = false;
     }
 
+    function showInfo(infoString)
+    {
+        infoMessageBanner.text = infoString;
+        infoMessageBanner.show();
+    }
+
+    InfoBanner{
+        id: infoMessageBanner
+        z: 99
+    }
+
     Label {
         id: lblSettings
         //anchors.centerIn: parent
@@ -24,6 +36,8 @@ Page {
         }
         text: qsTr("Global Settings")
         visible: true
+        font.bold: true
+        font.pixelSize: 25
     }
     Row{
         id: rowSettings1
@@ -32,14 +46,20 @@ Page {
         Switch{
             id: swGPS
             checked: objQSettings.getValue("/settings/GPS/enabled",true)
-            onCheckedChanged: {objQSettings.setValue("/settings/GPS/enabled",swGPS.checked) }
+            onCheckedChanged: {
+                objQSettings.setValue("/settings/GPS/enabled",swGPS.checked)
+                if (swGPS.checked)
+                    showInfo("Service will now reset and use all positioning methods (more battery used)")
+                else
+                    showInfo("Service will now reset use non-satellite positioning methods (less battery used)")
+            }
         }
         Text{
             width: rowSettings1.width - rowSettings1.spacing - swGPS.width
             height: swGPS.height
             verticalAlignment: Text.AlignVCenter
             text: "Use GPS"
-            font.pixelSize: 25
+            font.pixelSize: 22
             color: "black"
         }
     }
@@ -57,24 +77,64 @@ Page {
             height: swGPS.height
             verticalAlignment: Text.AlignVCenter
             text: "Enable Service"
-            font.pixelSize: 25
+            font.pixelSize: 22
             color: "black"
+        }
+    }
+    Row{
+        id: rowSettings25
+        spacing: 10
+        anchors.top: rowSettings2.bottom
+        CountBubble{
+            anchors.verticalCenter: txtGPSUI.verticalCenter
+            id: cbGPSInterval
+            value: gPSintervalSlider.value
+            largeSized: true
+            anchors.margins: 10
+        }
+        Text{
+            id: txtGPSUI
+            text: "GPS Update Interval (seconds): "
+            font.pixelSize: 22
+        }
+    }
+
+
+
+    Row{
+        id: rowSettings3
+        spacing: 10
+        anchors.top: rowSettings25.bottom
+        Slider{
+            id: gPSintervalSlider
+            value: objQSettings.getValue("/settings/GPS/interval",60)
+            stepSize: 15
+            maximumValue: 1800
+            width: settingsPage.width - btnNew.width
+            onPressedChanged: {
+                if (!gPSintervalSlider.pressed)
+                {
+                    objQSettings.setValue("/settings/GPS/interval",cbGPSInterval.value)
+                }
+            }
         }
     }
     Label {
         id: lblRules
         //anchors.centerIn: parent
         anchors{
-            top: rowSettings2.bottom
+            top: rowSettings3.bottom
             topMargin: 10
         }
         text: qsTr("Rules:")
+        font.pixelSize: 25
+        font.bold: true
     }
     Button{
         id: btnNew
         anchors {
             right: parent.right
-            top: lblRules.bottom
+            top: rowSettings3.verticalCenter
         }
         width: 150
         text: qsTr("New")

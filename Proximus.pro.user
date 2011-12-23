@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by Qt Creator 2.4.0, 2011-12-21T01:07:06. -->
+<!-- Written by Qt Creator 2.4.0, 2011-12-22T09:50:21. -->
 <qtcreator>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -132,7 +132,7 @@
        <value type="QString"></value>
       </valuelist>
       <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedTimes">
-       <value type="QDateTime">2011-12-21T01:03:42</value>
+       <value type="QDateTime">2011-12-21T23:25:30</value>
       </valuelist>
      </valuemap>
      <value type="int" key="ProjectExplorer.BuildStepList.StepsCount">3</value>
@@ -218,7 +218,9 @@
     <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.ExportedLocalDirs"/>
     <value type="QString" key="Qt4ProjectManager.MaemoRunConfiguration.ProFile">Proximus.pro</value>
     <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.RemoteMountPoints"/>
-    <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.UserEnvironmentChanges"/>
+    <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.UserEnvironmentChanges">
+     <value type="QString">USER=user</value>
+    </valuelist>
     <value type="QString" key="RemoteLinux.RunConfig.AlternateRemoteExecutable"></value>
     <value type="bool" key="RemoteLinux.RunConfig.UseAlternateRemoteExecutable">false</value>
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>

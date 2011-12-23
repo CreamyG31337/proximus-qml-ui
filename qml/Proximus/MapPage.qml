@@ -8,13 +8,13 @@ Page{
 
     property double longitudeReq
     property double latitudeReq
-    property int  radiusSize: 500
-    property variant ruleCircleObj
+    property int  radiusSize: 500   
 
     Component.onCompleted: {
-      //  putRuleCircle();
+
         instructionMessageBanner.text = "Drag the map to set target area.\nYou are the green circle.\nOrange circle is target radius.";
         instructionMessageBanner.show();
+
     }
 
     InfoBanner{
@@ -23,18 +23,22 @@ Page{
         timerShowTime: 5000 //5s
     }
 
-
     PositionSource {
         id: myPositionSource
-        active: true
+        active: false
         updateInterval: 1500
         onPositionChanged: {
-            //console.log(position.coordinate)
-            //ruleCoordForCircleObj = map.toCoordinate(Qt.point(map.width / 2, map.height / 2)); //map.center;
-            //putRuleCircle();
-        }        
+            if (!btnGotoMe.enabled) {
+                if (myPositionSource.position.longitudeValid && myPositionSource.position.latitudeValid) {
+                    map.center.longitude = myPositionSource.position.coordinate.longitude;
+                    map.center.latitude = myPositionSource.position.coordinate.latitude;
+                    myPosition.radius = myPositionSource.position.horizontalAccuracy  //15
+                    map.zoomLevel = 16
+                    btnGotoMe.enabled = true
+                }
+            }
+        }
     }
-
 
     Coordinate{
         id: ruleCoordForMap
@@ -55,10 +59,18 @@ Page{
         text: qsTr("Find Me")
 
         onClicked: {
-            map.center.longitude = myPositionSource.position.coordinate.longitude;
-            map.center.latitude = myPositionSource.position.coordinate.latitude;
-            myPosition.radius = myPositionSource.position.horizontalAccuracy  //15
-            map.zoomLevel = 16
+            myPositionSource.start()
+            if (myPositionSource.position.longitudeValid && myPositionSource.position.latitudeValid) {
+                map.center.longitude = myPositionSource.position.coordinate.longitude;
+                map.center.latitude = myPositionSource.position.coordinate.latitude;
+                myPosition.radius = myPositionSource.position.horizontalAccuracy  //15
+                map.zoomLevel = 16
+            }
+            else {
+                instructionMessageBanner.text = "GPS is searching... just a sec";
+                instructionMessageBanner.show();
+                btnGotoMe.enabled = false;
+            }
         }
     }
 
@@ -73,6 +85,7 @@ Page{
         width: 100
         text: qsTr("Save")
         onClicked: {
+            myPositionSource.stop()
             appWindow.pageStack.pop()
             appWindow.pageStack.currentPage.setCoord(map.center.latitude,map.center.longitude)
             //that logic is so fu*ked up, i wish qml just had pointers.
@@ -88,7 +101,7 @@ Page{
         size.height: parent.height
         zoomLevel: 10
         center: ruleCoordForMap //if this ever changes the stupid map goes there automatically?
-
+        //connectivityMode: Map.OfflineMode // doesn't work. great.
         MapCircle {
             id: myPosition
             color: Qt.rgba(0, 1, 0, 0.5)
