@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+import com.nokia.extras 1.1
 
 Page {
     tools: commonTools
@@ -11,8 +12,12 @@ Page {
             right: parent.right;
             bottom: parent.bottom
         }
-//        ToolIcon{  iconId: "toolbar-back";
-//            onClicked: { myMenu.close(); pageStack.pop(); } }
+        ToolIcon{
+            id: toolIcoBack
+            iconId: "toolbar-back";
+            onClicked: { myMenu.close(); pageStack.pop(); }
+            visible: false
+        }
         ButtonRow {
             style: TabButtonStyle { }
             TabButton {
@@ -33,12 +38,7 @@ Page {
     TabGroup {
         id: tabGroup
         currentTab: tabStatus
-        anchors {
-        left: parent.left;
-        right: parent.right;
-        top: statusBar.bottom;
-        bottom: parent.bottom
-        }
+        anchors.fill: parent
         // define the content for tab 1
         StatusPage {
             id: tabStatus
@@ -54,14 +54,9 @@ Page {
         id: myMenu
         visualParent: pageStack
         MenuLayout {
-            MenuItem { text: qsTr("About Proximus") }
-            MenuItem { text: qsTr("Report Bug") }
-            MenuItem { text: qsTr("Clear Settings")
-                onClicked: {
-                    objQSettings.clear()
-                    objProximusUtils.refreshRulesModel();
-                }
-            }
+            MenuItem { text: qsTr("About Proximus"); onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"))}
+            MenuItem { text: qsTr("Send Feedback"); onClicked: pageStack.push(Qt.resolvedUrl("FeedbackPage.qml"))}
+            MenuItem { text: qsTr("Clear Settings"); onClicked: pageStack.push(Qt.resolvedUrl("ResetPage.qml"))}
         }
     }
 }

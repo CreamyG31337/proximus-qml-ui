@@ -1,0 +1,23 @@
+Format: 1.8
+Date: Sun, 25 Dec 2011 11:52:08 -0800
+Source: proximus
+Binary: proximus
+Architecture: armel
+Version: 1.0.0
+Distribution: unstable
+Urgency: low
+Maintainer: unknown <>
+Changed-By: unknown <>
+Description: 
+ proximus   - Change phone status based on user defined rules
+Changes: 
+ proximus (1.0.0) unstable; urgency=low
+ .
+   * <Add change description here>
+Checksums-Sha1: 
+ d77f4d03d6d13bc822ed533886c3fb11cc0ecf81 222072 proximus_1.0.0_armel.deb
+Checksums-Sha256: 
+ c39bca1fdb7462b148ec7baeda08de08f23430e98a5403a60fe0f55bad73c37d 222072 proximus_1.0.0_armel.deb
+Files: 
+ 027be3c917a505054d0e3ee171654bb4 222072 user/other optional proximus_1.0.0_armel.deb
+Maemo-Display-Name: Proximus

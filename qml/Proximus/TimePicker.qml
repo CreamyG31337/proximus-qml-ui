@@ -2,6 +2,13 @@ import QtQuick 1.1
 import com.nokia.meego 1.0
 Page{
     property int time // 1 or 2
+    property int hours: 0
+    property int minutes: 0
+
+    Component.onCompleted: {
+        timePicker.hours = hours
+        timePicker.minutes = minutes
+    }
 
     onHeightChanged: {//on rotate move text from behind time picker
         if ( test.height < test.width) {

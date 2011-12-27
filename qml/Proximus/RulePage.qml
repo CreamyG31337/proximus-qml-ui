@@ -6,6 +6,7 @@ Page{
     //tools: commonTools
     id: rulePage
     property string ruleName: "InvalidRuleName"
+    anchors.margins: 7
 
     function setCoord(latitude, longitude)
     {
@@ -55,8 +56,12 @@ Page{
             width: 300
             height: 45
             id: txtRuleName
-            text:{ if (ruleName != "InvalidRuleName")
-                {text = ruleName}
+            text:{
+                if (ruleName != "InvalidRuleName"){
+                    text = ruleName;
+                }
+                else
+                    text = ""
             }
             placeholderText: "Enter Name For This Rule"
             font.pixelSize: 26
@@ -78,6 +83,7 @@ Page{
             checked: objQSettings.getValue("/rules/" + ruleName + "/Actions/Profile/enabled",true)
         }
         Label{
+            anchors.margins: 7
             id: lblSwProfile
             anchors.top: lblActionHeader.bottom
             anchors.left: swChangeProfile.right
@@ -110,11 +116,13 @@ Page{
             id: lblActivationHeader
             text: "When..."
             anchors.top: swChangeProfile.bottom
+            anchors.margins: 5
             height: 20
         }
 //////////////////LOCATION
         Switch{
             anchors.top: lblActivationHeader.bottom
+            anchors.margins: 5
             id: swUseLocation
             checked: objQSettings.getValue("/rules/" + ruleName + "/Location/enabled",true)
         }
@@ -141,6 +149,7 @@ Page{
             id: swUseLocationNot
             anchors.top: lblActivationHeader.bottom
             anchors.right: parent.right
+            anchors.margins: 5
             checked: objQSettings.getValue("/rules/" + ruleName + "/Location/NOT",false)
             enabled: swUseLocation.checked
         }
@@ -181,6 +190,7 @@ Page{
             width: parent.width - lblLocationRadius.width - cbRadius.width
             anchors.verticalCenter: lblLocationRadius.verticalCenter
             anchors.left: cbRadius.right
+            anchors.margins: 5
             value: objQSettings.getValue("/rules/" + ruleName + "/Location/RADIUS",100)
             stepSize: 10
             maximumValue: 2000
@@ -216,6 +226,7 @@ Page{
             maximumLength: 13
             placeholderText: "click this >>"
             enabled: swUseLocation.checked
+            inputMethodHints: Qt.ImhFormattedNumbersOnly
         }
         Label {
             anchors.top: txtLocLatitude.bottom
@@ -228,6 +239,7 @@ Page{
             id: txtLocLongitude
             anchors.top: txtLocLatitude.bottom
             anchors.left: lblLocationLongitude.right
+            anchors.margins: 5
             width: 180
             height: 45
             text: objQSettings.getValue("/rules/" + ruleName + "/Location/LONGITUDE",0)
@@ -236,6 +248,7 @@ Page{
             maximumLength: 13
             placeholderText: "click this >>"
             enabled: swUseLocation.checked
+            inputMethodHints: Qt.ImhFormattedNumbersOnly
         }
 
         Button{
@@ -243,10 +256,11 @@ Page{
             anchors {
                 right: parent.right
                 top: txtLocLatitude.top
+                margins: 5
             }
-            width: 170
+            width: 150
             height: 45*2
-            text: qsTr("Fill From Map")
+            text: qsTr("Fill From\nMap")
             //onClicked: appWindow.pageStack.push(mapPage)
             //doing this way everywhere seems dumb because everything is created too early,
             //gps activates when u launch the app. but it still does that.
@@ -265,6 +279,7 @@ Page{
             id: swUseCalendar
             anchors.top: btnFillFromMap.bottom
             anchors.left: parent.left
+            anchors.margins: 5
             checked: objQSettings.getValue("/rules/" + ruleName + "/Calendar/enabled",true)
         }
         Label{
@@ -290,6 +305,7 @@ Page{
             id: swUseCalendarNOT
             anchors.right: parent.right
             anchors.top: btnFillFromMap.bottom
+            anchors.margins: 5
             checked: objQSettings.getValue("/rules/" + ruleName + "/Calendar/NOT",false)
             enabled: swUseCalendar.checked
         }
@@ -312,6 +328,7 @@ Page{
             id: swUseTime
             anchors.top: txtCalendarKeywords.bottom
             anchors.left: parent.left
+            anchors.margins: 5
             checked: objQSettings.getValue("/rules/" + ruleName + "/Time/enabled",true)
         }
         Label{
@@ -337,6 +354,7 @@ Page{
             id: swUseTimeNot
             anchors.top: txtCalendarKeywords.bottom
             anchors.right: parent.right
+            anchors.margins: 5
             checked: objQSettings.getValue("/rules/" + ruleName + "/Time/NOT",false)
             enabled: swUseTime.checked
         }
@@ -345,12 +363,21 @@ Page{
             anchors {
                 left: parent.left
                 top: swUseTimeNot.bottom
+                margins: 5
             }
-            width: 200
-            text: objQSettings.getValue("/rules/" + ruleName + "/Time/TIME1","set time 1")
+            width: 225
+            text: objQSettings.getValue("/rules/" + ruleName + "/Time/TIME1","?").slice(0,4)
             onClicked: {
+                var _hours = 0
+                var _minutes = 0
+                if (btnTime1.text != "?"){
+                    var time = btnTime1.text.match(/(\d?\d):?(\d\d)(:00)?/);
+                    _hours = parseInt(time[1]);
+                    _minutes = parseInt(time[2]);
+                }
                 appWindow.pageStack.push(Qt.resolvedUrl("TimePicker.qml"),
-                  {time: 1} );
+                  {time: 1, hours: _hours , minutes: _minutes } );
+
             }
             style: TumblerButtonStyle {}
             enabled: swUseTime.checked
@@ -360,12 +387,21 @@ Page{
             anchors {
                 left: btnTime1.right
                 top: swUseTimeNot.bottom
+                margins: 5
             }
-            width: 200
-            text: objQSettings.getValue("/rules/" + ruleName + "/Time/TIME2","set time 2")
+            width: 225
+            text: objQSettings.getValue("/rules/" + ruleName + "/Time/TIME2","?").slice(0,4)
             onClicked: {
+                var _hours = 0
+                var _minutes = 0
+                if (btnTime1.text != "?"){
+                    var time = btnTime1.text.match(/(\d?\d):?(\d\d)(:00)?/);
+                    _hours = parseInt(time[1]);
+                    _minutes = parseInt(time[2]);
+                }
                 appWindow.pageStack.push(Qt.resolvedUrl("TimePicker.qml"),
-                  {time: 2} );
+                  {time: 2, hours: _hours , minutes: _minutes } );
+
             }
             enabled: swUseTime.checked
         }
@@ -376,6 +412,7 @@ Page{
             anchors {
                 right: parent.right
                 bottom: parent.bottom
+                margins: 5
             }
             width: 150
             text: qsTr("Cancel")
@@ -388,38 +425,31 @@ Page{
             anchors {
                 right: btnCancel.left
                 bottom: parent.bottom
+                margins: 5
             }
             width: 150
             text: qsTr("Save")
             onClicked: {
                 var errorString = "";                
-                if (!txtRuleName.acceptableInput)
-                {
+                if (!txtRuleName.acceptableInput){
                     errorString += "Rule name is blank or not valid\n"
                 }
-
-                if (txtCalendarKeywords.enabled && !txtCalendarKeywords.acceptableInput)
-                {
+                if (swChangeProfile.checked && btnChooseProfile.text == "choose") {
+                    errorString += "Choose a profile to switch to\n"
+                }
+                if (txtCalendarKeywords.enabled && !txtCalendarKeywords.acceptableInput){
                     errorString += "Enter calendar keywords or disable that section\n"
                 }
-
-                if (btnTime1.enabled && (btnTime1.text == "set time 1" || btnTime2.text == "set time 2"))
-                {
+                if (btnTime1.enabled && (btnTime1.text == "?" || btnTime2.text == "?")){
                     errorString += "Set valid times for both Time 1 and Time 2 or disable that section\n"
                 }
-
-                if (btnTime1.enabled && (btnTime1.text == btnTime2.text))
-                {
+                if (btnTime1.enabled && (btnTime1.text == btnTime2.text)){
                     errorString += "Time1 and Time2 must be different if time checking is enabled\n"
                 }
-
-                if (txtLocLatitude.enabled && (!txtLocLatitude.acceptableInput || !txtLocLongitude.acceptableInput ))
-                {
+                if (txtLocLatitude.enabled && (!txtLocLatitude.acceptableInput || !txtLocLongitude.acceptableInput )){
                     errorString += "Use the fill from map button, manually enter valid coordinates, or disable that section\n"
-
                 }
-                if (errorString.length > 1)
-                {
+                if (errorString.length > 1){
                     showError(errorString);
                     return;
                 }
@@ -441,22 +471,26 @@ Page{
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Actions/Profile/NAME", btnChooseProfile.text);
 
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Location/enabled",swUseLocation.checked);
+                if (swUseLocation.checked){
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Location/NOT",swUseLocationNot.checked);
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Location/RADIUS",cbRadius.value);
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Location/LATITUDE",txtLocLatitude.text);
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Location/LONGITUDE",txtLocLongitude.text);
+                }
 
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Time/enabled",swUseTime.checked);
+                if (swUseTime.checked){
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Time/NOT",swUseTimeNot.checked);
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Time/TIME1",btnTime1.text + ":00");
-                //console.log("time1/time2 " + btnTime1.text + btnTime2.text )
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Time/TIME2",btnTime2.text + ":00");
+                }
 
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Calendar/enabled",swUseCalendar.checked);
+                if (swUseCalendar.checked){
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Calendar/NOT",swUseCalendarNOT.checked);
                 objQSettings.setValue("/rules/" + txtRuleName.text + "/Calendar/KEYWORDS",txtCalendarKeywords.text);
-
-                objProximusUtils.refreshRulesModel(); //why can't i call the function now??
+                }
+                objProximusUtils.refreshRulesModel(); //why can't i call the function in settingsPage now??
                 appWindow.pageStack.pop()
             }
         }
